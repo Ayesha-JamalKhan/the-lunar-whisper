@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ArrowUp, Telescope, Volume2, VolumeX } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ChapterSection } from '@/components/story/chapter-section'
 import {
@@ -77,22 +77,11 @@ function VoiceToggle() {
   )
 }
 
-/** The title page: the cover illustration, stretched to fill the screen. */
+/** The title page: the cover illustration (the title is in the artwork), stretched to fill the screen. */
 const COVER = '/title.png'
-/** Used until `/title.png` is added to `public/`. */
-const COVER_FALLBACK = '/title.jpg'
 
 function Hero() {
-  const [cover, setCover] = useState(COVER)
-  const img = useRef<HTMLImageElement>(null)
-  const widths = [640, 960, 1280, 1536]
-  const fallBack = () => setCover((c) => (c === COVER ? COVER_FALLBACK : c))
-
-  // The picture can fail before the page is interactive, when onError isn't listening yet.
-  useEffect(() => {
-    const el = img.current
-    if (el?.complete && el.naturalWidth === 0) fallBack()
-  }, [])
+  const widths = [640, 960, 1280, 1672]
 
   const begin = () => {
     const first = document.getElementById(chapters[0].id)
@@ -104,16 +93,14 @@ function Hero() {
     <header id="top" className="relative h-svh overflow-hidden bg-background">
       <h1 className="sr-only">The Lunar Whisper</h1>
       <img
-        ref={img}
-        src={imageUrl(cover, 1280)}
-        srcSet={widths.map((w) => `${imageUrl(cover, w)} ${w}w`).join(', ')}
+        src={imageUrl(COVER, 1280)}
+        srcSet={widths.map((w) => `${imageUrl(COVER, w)} ${w}w`).join(', ')}
         sizes="100vw"
-        alt="The Lunar Whisper. A young woman and her little nephew sit on a stone rooftop above a mountain river at night, looking up at the Moon, Jupiter, icy Europa and the James Webb Space Telescope."
-        width={896}
-        height={1200}
+        alt="The Lunar Whisper. A young woman in a headscarf and her little nephew sit on a stone rooftop above a winding mountain river at night. The boy points up at the Moon, Jupiter, icy Europa and the James Webb Space Telescope."
+        width={1672}
+        height={941}
         fetchPriority="high"
         decoding="async"
-        onError={fallBack}
         // Stretched to fill the whole screen, with no empty space around it.
         className="relative h-full w-full object-fill"
       />

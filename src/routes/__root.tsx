@@ -52,7 +52,7 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:image',
-        content: '/.netlify/images?url=/title.jpg&w=1024&fm=jpg',
+        content: '/.netlify/images?url=/title.png&w=1200&fm=jpg',
       },
       {
         name: 'twitter:card',
