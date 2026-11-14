@@ -23,5 +23,14 @@ We are an aunt-and-nephew creative duo. By pairing a young explorer’s boundles
 - https://swot.jpl.nasa.gov/
 - https://gpm.nasa.gov/
 - https://svs.gsfc.nasa.gov/13693/
+- ### Data Sources
+* [NASA Science](https://science.nasa.gov/)
+* [NASA Europa Clipper](https://science.nasa.gov/mission/europa-clipper/)
+* [James Webb Space Telescope](https://science.nasa.gov/mission/webb/)
+* [NASA SWOT (Surface Water and Ocean Topography)](https://swot.jpl.nasa.gov/)
+* [NASA Global Precipitation Measurement (GPM)](https://gpm.nasa.gov/)
+* [NASA Landsat](https://science.nasa.gov/mission/landsat/)
+
+
 
 
