@@ -19,8 +19,8 @@ We are an aunt-and-nephew creative duo. By pairing a young explorer’s boundles
 
 ## Data Sources
 
-https://science.nasa.gov/
-https://science.nasa.gov/missions/webb/nasas-webb-finds-carbon-source-on-surface-of-jupiters-moon-europa/
-https://swot.jpl.nasa.gov/
-https://gpm.nasa.gov/
+- https://science.nasa.gov/
+- https://science.nasa.gov/missions/webb/nasas-webb-finds-carbon-source-on-surface-of-jupiters-moon-europa/
+- https://swot.jpl.nasa.gov/
+- https://gpm.nasa.gov/
 
