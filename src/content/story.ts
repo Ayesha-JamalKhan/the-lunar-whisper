@@ -15,6 +15,13 @@ export type Mood =
   | 'sleepy'
   | 'serious'
   | 'amazed'
+  | 'warm'
+  | 'proud'
+  | 'hopeful'
+  | 'tender'
+  | 'teasing'
+  | 'urgent'
+  | 'mysterious'
 
 export type Line =
   | {
@@ -96,22 +103,22 @@ export const characters: Record<Speaker, Character> = {
     name: 'Ash',
     description: 'in her twenties, Shazz’s aunt, knows the names of things',
     voice: {
-      label: 'A warm, lively young woman’s voice',
+      label: 'A warm, expressive young American woman’s voice',
       prefer: 'female',
       pitch: 1.06,
-      rate: 1.08,
-      bounce: 0.14,
+      rate: 1,
+      bounce: 0.12,
     },
   },
   shazz: {
     name: 'Shazz',
     description: 'six, her nephew, asks why',
     voice: {
-      label: 'A high, bouncy, curious little boy’s voice',
+      label: 'A bright, bouncy American six-year-old boy’s voice',
       prefer: 'child',
-      pitch: 1.75,
-      rate: 1.22,
-      bounce: 0.22,
+      pitch: 1.8,
+      rate: 1.02,
+      bounce: 0.3,
     },
   },
 }
@@ -124,7 +131,7 @@ export const narrator: Character = {
     label: 'A calm, warm man’s storytelling voice',
     prefer: 'male',
     pitch: 0.9,
-    rate: 1.04,
+    rate: 0.98,
     bounce: 0.1,
   },
 }
@@ -190,7 +197,7 @@ export const chapters: Chapter[] = [
         ],
       },
       {
-        lines: [shazz('Ash... is there anyone else out there? Up in sky?', ['whisper', 'curious'])],
+        lines: [shazz('Ash... is there anyone else out there? Up in sky?', 'curious')],
       },
       {
         lines: [
@@ -202,13 +209,13 @@ export const chapters: Chapter[] = [
         ],
       },
       {
-        lines: [shazz('What is inside it, Ash?', 'curious')],
+        lines: [shazz('What is inside it, Ash?', 'teasing')],
       },
       {
         lines: [
           ash(
             'Europa has water. Not a little water, but more water than all the oceans on Earth! Hidden under ice. An ocean so deep, so dark, and so secret.',
-            ['wonder', 'excited', 'whisper', 'whisper'],
+            ['mysterious', 'excited', 'whisper', 'mysterious'],
             'Ash smiled:',
           ),
         ],
@@ -221,7 +228,7 @@ export const chapters: Chapter[] = [
         lines: [
           shazz(
             "So life doesn't need the Sun? It just needs water?",
-            ['amazed', 'curious'],
+            'amazed',
             'Shazz asked:',
           ),
         ],
@@ -230,7 +237,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             "Exactly! And this is why Europa's story is so close to us. If life can live in the dark under ice, then life is stronger than we thought, and water is more precious than we imagine.",
-            ['excited', 'gentle', 'serious'],
+            ['proud', 'warm', 'hopeful'],
             'Ash said:',
           ),
         ],
@@ -243,7 +250,7 @@ export const chapters: Chapter[] = [
         lines: [
           shazz(
             'So... Europa could have life? Real life? Like fish? Like... aliens?',
-            ['amazed', 'excited', 'curious', 'playful', 'excited'],
+            'excited',
             'His eyes go wide.',
           ),
         ],
@@ -256,12 +263,12 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'Maybe not fish. Maybe tiny, tiny life, microbes so small you cannot see them. But alive! Breathing, eating, growing in water, in the dark, under ice. And we have an ear that can finally listen to its whispering.',
-            ['playful', 'gentle', 'excited', 'wonder', 'whisper'],
+            ['teasing', 'tender', 'excited', 'wonder', 'mysterious'],
           ),
         ],
       },
       {
-        lines: [shazz('What is our Ear in space, Ash?', 'amazed')],
+        lines: [shazz('What is our Ear in space, Ash?', 'wonder')],
       },
       {
         image: {
@@ -271,7 +278,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'His name is Webb. The James Webb Space Telescope. It does not see like you. It sees heat. It sees water. It listens for the chemicals of life.',
-            ['playful', 'excited', 'gentle', 'serious', 'serious', 'wonder'],
+            ['playful', 'proud', 'teasing', 'amazed', 'wonder', 'mysterious'],
           ),
         ],
       },
@@ -314,13 +321,13 @@ export const chapters: Chapter[] = [
         },
       },
       {
-        lines: [shazz('Ash, is Webb listening to us too?', ['curious'])],
+        lines: [shazz('Ash, is Webb listening to us too?', 'playful')],
       },
       {
         lines: [
           ash(
             'Webb listens to space. But the same way it sees heat and water from far away is how NASA watches Earth. To watch our glaciers. To watch our rivers.',
-            ['playful', 'gentle', 'wonder', 'serious'],
+            ['warm', 'gentle', 'proud', 'hopeful'],
           ),
         ],
       },
@@ -334,7 +341,7 @@ export const chapters: Chapter[] = [
         },
       },
       {
-        lines: [shazz('Ash, did it watch the flood last year?', ['curious', 'sad'])],
+        lines: [shazz('Ash, did it watch the flood last year?', 'sad')],
       },
       {
         lines: [n('Ash was silent.', 'sad')],
@@ -354,13 +361,13 @@ export const chapters: Chapter[] = [
     align: 'right',
     beats: [
       {
-        lines: [shazz('Ash, was that flood water also life?', ['curious', 'sad'])],
+        lines: [shazz('Ash, was that flood water also life?', 'tender')],
       },
       {
         lines: [
           ash(
             "Water is life when we respect it. Water becomes danger when we don't understand it. And that is why NASA data matters.",
-            ['gentle', 'serious', 'serious'],
+            ['warm', 'serious', 'proud'],
           ),
         ],
       },
@@ -368,7 +375,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'Our glaciers are like Europa’s ice shell. They are melting because Earth is getting warmer. NASA satellites use infrared, the same kind of heat-seeing that Webb uses, to measure how fast the ice is melting, and how much water will come down.',
-            ['gentle', 'serious', 'wonder', 'serious'],
+            ['serious', 'tender', 'sad', 'wonder'],
             'She explains, slowly',
             '1. NASA watches our glaciers melting:',
           ),
@@ -382,7 +389,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'NASA’s rain satellites measure monsoon clouds over Pakistan days before they arrive. They can tell if a village will get too much rain or a river will rise.',
-            ['wonder', 'serious'],
+            ['serious', 'wonder', 'hopeful'],
             undefined,
             '2. NASA watches the rain as it falls:',
           ),
@@ -396,7 +403,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'NASA’s SWOT and Landsat satellites measure river height and soil wetness. If a river is rising too fast, they can send an ‘early warning’ ⚠️.',
-            ['serious', 'excited'],
+            ['serious', 'serious', 'urgent'],
             undefined,
             '3. NASA watches the rivers rising:',
           ),
@@ -414,7 +421,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'If we get a warning 3 days early, we can move people. We can save animals. We can save homes. We can prevent a disaster!',
-            ['serious', 'gentle', 'gentle', 'excited'],
+            ['urgent', 'hopeful', 'warm', 'proud'],
           ),
         ],
       },
@@ -449,7 +456,7 @@ export const chapters: Chapter[] = [
         lines: [
           ash(
             'When Webb looks at Europa, it is not just looking for aliens. It is reminding us: If you want to find life, find water. If you want to keep life, save water.',
-            ['gentle', 'wonder', 'serious', 'serious'],
+            ['tender', 'mysterious', 'wonder', 'proud'],
           ),
         ],
       },
@@ -457,7 +464,7 @@ export const chapters: Chapter[] = [
         lines: [
           shazz(
             'When I grow up, I want to build a probe that goes to Europa! I want to taste its ocean! But first, I will save the ocean we already have. I will help Pakistan hear the flood warning in time.',
-            ['excited', 'excited', 'serious', 'serious'],
+            ['excited', 'playful', 'proud', 'hopeful'],
             'The boy turns to his Aunt and says:',
           ),
         ],
