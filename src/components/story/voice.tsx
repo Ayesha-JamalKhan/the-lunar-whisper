@@ -12,6 +12,7 @@ import {
 
 import {
   characters,
+  narrator,
   type Line,
   type Mood,
   type Speaker,
@@ -20,8 +21,8 @@ import {
 
 /**
  * Reads the story aloud with the browser's built-in speech synthesis, giving
- * Ash and Shazz each their own voice. Narration is never read aloud, only
- * dialogue. To keep the voices from sounding flat, each line is split into
+ * the narrator, Ash and Shazz each their own voice: a calm man for the
+ * narration, a warm young woman for Ash and a little boy for Shazz. To keep the voices from sounding flat, each line is split into
  * phrases. Every phrase gets its own pitch, pace and pause, set by the line's
  * mood, its punctuation and the character's natural bounce. Nothing is generated
  * on a server; if the browser has no speech support, the voice controls stay
@@ -89,23 +90,26 @@ function castVoices(all: SpeechSynthesisVoice[]) {
     return choice ?? null
   }
 
+  // The narrator picks first so he gets the best man's voice.
   return {
+    narrator: pick(narrator.voice),
     ash: pick(characters.ash.voice),
     shazz: pick(characters.shazz.voice),
-  } satisfies Record<Speaker, SpeechSynthesisVoice | null>
+  } satisfies Record<Speaker | 'narrator', SpeechSynthesisVoice | null>
 }
 
 /** Pitch × rate × volume adjustments for each mood. */
 const MOODS: Record<Mood, { pitch: number; rate: number; volume: number }> = {
-  excited: { pitch: 1.14, rate: 1.12, volume: 1 },
-  curious: { pitch: 1.07, rate: 1, volume: 0.95 },
-  wonder: { pitch: 1.05, rate: 0.86, volume: 0.9 },
-  gentle: { pitch: 0.97, rate: 0.9, volume: 0.85 },
-  whisper: { pitch: 0.92, rate: 0.8, volume: 0.55 },
-  playful: { pitch: 1.1, rate: 1.06, volume: 1 },
-  sad: { pitch: 0.88, rate: 0.84, volume: 0.75 },
-  sleepy: { pitch: 0.9, rate: 0.76, volume: 0.65 },
-  serious: { pitch: 0.94, rate: 0.92, volume: 0.95 },
+  excited: { pitch: 1.18, rate: 1.14, volume: 1 },
+  curious: { pitch: 1.1, rate: 1.04, volume: 0.95 },
+  wonder: { pitch: 1.07, rate: 0.95, volume: 0.92 },
+  gentle: { pitch: 0.98, rate: 0.98, volume: 0.88 },
+  whisper: { pitch: 0.9, rate: 0.9, volume: 0.6 },
+  playful: { pitch: 1.13, rate: 1.1, volume: 1 },
+  sad: { pitch: 0.86, rate: 0.9, volume: 0.78 },
+  sleepy: { pitch: 0.9, rate: 0.88, volume: 0.7 },
+  serious: { pitch: 0.92, rate: 0.98, volume: 1 },
+  amazed: { pitch: 1.2, rate: 1, volume: 1 },
 }
 
 interface Phrase {
@@ -117,52 +121,78 @@ interface Phrase {
   pause: number
 }
 
+/**
+ * The extra silence after a full stop, comma, exclamation mark or question
+ * mark (and after each line of verse). Kept very short on purpose: the speech
+ * engine already adds its own small gap between phrases.
+ */
+const PUNCTUATION_PAUSE = 150
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value))
 
 /**
- * Splits a line into phrases and gives each one its own delivery: questions
- * rise, exclamations lift, short phrases ("Squeeze, stretch.") are slowed
- * and leaned on, trailing dots linger, and sentences fall gently toward their end.
+ * Splits a line into phrases and gives each one its own delivery. `mood` can
+ * be one mood for the whole line, or a list with one mood per sentence, so a
+ * line can change feeling halfway ("Not a little water!" then a whisper).
+ * Questions rise, exclamations lift and speed up, short phrases ("So deep.")
+ * are leaned on, trailing dots linger, the first phrase of each sentence gets
+ * a little extra energy, and sentences fall gently toward their end.
  */
-export function shapeLine(text: string, profile: VoiceProfile, mood?: Mood): Phrase[] {
-  const m = MOODS[mood ?? 'gentle']
-  const parts = text.match(/[^,;:.!?…—]+(?:[,;:.!?…—]+|$)/g) ?? [text]
+export function shapeLine(
+  text: string,
+  profile: VoiceProfile,
+  mood?: Mood | Mood[],
+): Phrase[] {
+  const moods = Array.isArray(mood) ? mood : [mood ?? 'gentle']
+  const parts = text.match(/[^,;:.!?…—\n]+(?:[,;:.!?…—\n]+|$)/g) ?? [text]
   const phrases: Phrase[] = []
+  let sentence = 0
   let inSentence = 0
 
   parts.forEach((raw, i) => {
     const part = raw.trim()
     if (!/[a-z0-9]/i.test(part)) return
-    const end = part.match(/[,;:.!?…—]+$/)?.[0] ?? ''
+    const m = MOODS[moods[Math.min(sentence, moods.length - 1)] ?? 'gentle']
+    // A line break (in verse) ends a phrase just like punctuation does.
+    const end = raw.match(/[,;:.!?…—\n]+\s*$/)?.[0] ?? ''
     const words = part.split(/\s+/).length
-    const sentenceEnd = /[.!?…]/.test(end)
+    const sentenceEnd = /[.!?…\n]/.test(end)
 
     // Natural rise and fall: alternate up and down, and drift down through a sentence.
-    const swing = (i % 2 === 0 ? 1 : -0.6) * profile.bounce
-    let pitch = profile.pitch * m.pitch * (1 + swing - inSentence * 0.04)
+    const swing = (i % 2 === 0 ? 1 : -0.7) * profile.bounce
+    let pitch = profile.pitch * m.pitch * (1 + swing - inSentence * 0.05)
     let rate = profile.rate * m.rate
-    let pause = sentenceEnd ? profile.pause : profile.pause * 0.45
+    let volume = m.volume
+    // Every stop gets the same short breath; nothing waits longer than that.
+    const pause = end ? PUNCTUATION_PAUSE : 0
 
-    if (end.includes('?')) pitch *= 1.15 // a question lifts at the end
+    // Start each sentence with a little lift, as people do.
+    if (inSentence === 0) {
+      pitch *= 1.04
+      volume = Math.min(1, volume * 1.05)
+    }
+    if (end.includes('?')) pitch *= 1.2 // a question lifts at the end
     if (end.includes('!')) {
-      pitch *= 1.1
-      rate *= 1.06
+      pitch *= 1.14
+      rate *= 1.08
+      volume = 1
     }
-    if (end.includes('…') || end.includes('...')) {
-      rate *= 0.85
-      pause += 400
-    }
-    if (end.includes('—')) pause += 150
+    if (end.includes('…') || end.includes('...')) rate *= 0.9
     if (words <= 3) {
-      rate *= 0.88 // lean on short, punchy phrases
-      pause += 80
+      rate *= 0.93 // lean on short, punchy phrases
+      pitch *= 1.03
     }
 
     pitch = clamp(pitch, 0.1, 2)
     rate = clamp(rate, 0.5, 2)
-    phrases.push({ text: part, pitch, rate, volume: m.volume, pause })
-    inSentence = sentenceEnd ? 0 : inSentence + 1
+    phrases.push({ text: part, pitch, rate, volume: clamp(volume, 0, 1), pause })
+    if (sentenceEnd) {
+      sentence++
+      inSentence = 0
+    } else {
+      inSentence++
+    }
   })
 
   return phrases
@@ -170,9 +200,27 @@ export function shapeLine(text: string, profile: VoiceProfile, mood?: Mood): Phr
 
 const noop = () => () => {}
 
-/** True when a card has at least one spoken line worth playing. */
+/**
+ * The words of a line as they are read aloud: a heading first, then the
+ * text, then any list items. Emoji such as ⚠️ are shown but not spoken.
+ */
+export function spokenText(line: Line) {
+  // Point numbers ("1. NASA watches…") are shown but not read aloud.
+  const parts = [line.heading?.replace(/^\s*\d+[.)]\s*/, ''), line.text]
+  if (line.kind === 'narration' && line.items) parts.push(...line.items)
+  return parts
+    .filter(Boolean)
+    .map((part) => part!.trim())
+    // A heading or list item ends with a pause, like the end of a sentence.
+    .map((part) => (/[.!?:…]$/.test(part) ? part : `${part}.`))
+    .join(' ')
+    .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '')
+    .replace(/\s+([.,!?])/g, '$1')
+}
+
+/** True when a card has at least one line worth reading aloud. */
 export function hasDialogue(lines: Line[]) {
-  return lines.some((line) => line.kind === 'speech')
+  return lines.some((line) => /[a-z0-9]/i.test(spokenText(line)))
 }
 
 export function VoiceProvider({ children }: { children: ReactNode }) {
@@ -217,17 +265,18 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
           return
         }
         const line = lines[i]
-        // Narration stays silent; only the characters speak.
-        if (line.kind !== 'speech') {
+        // Narration is read by the narrator; dialogue by the character speaking.
+        const isSpeech = line.kind === 'speech'
+        const voice = isSpeech ? cast[line.speaker] : cast.narrator
+        const phrases = shapeLine(
+          spokenText(line),
+          isSpeech ? characters[line.speaker].voice : narrator.voice,
+          line.mood,
+        )
+        if (!phrases.length) {
           speak(i + 1)
           return
         }
-        const voice = cast[line.speaker]
-        const phrases = shapeLine(
-          line.text,
-          characters[line.speaker].voice,
-          line.mood,
-        )
         setPlaying({ id, line: i })
 
         const say = (k: number) => {

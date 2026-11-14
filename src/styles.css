@@ -170,9 +170,46 @@ html {
   animation: twinkle var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
 }
 
+/* A four-pointed glint with a warm glow, drawn from two crossed rays. */
+.sparkle {
+  translate: -50% -50%;
+  background:
+    radial-gradient(circle, oklch(1 0 0) 0 12%, oklch(0.95 0.06 85 / 0.8) 18%, transparent 42%),
+    linear-gradient(90deg, transparent 44%, oklch(1 0.02 85) 50%, transparent 56%),
+    linear-gradient(0deg, transparent 44%, oklch(1 0.02 85) 50%, transparent 56%);
+  filter: drop-shadow(0 0 4px oklch(0.95 0.08 85 / 0.9));
+  animation: sparkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.45) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(20deg);
+  }
+}
+
+/* Without movement: the glints still fade in and out, but don't grow or turn. */
+@keyframes sparkle-fade {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .drift,
-  .star {
+  .drift {
     animation: none;
+  }
+  /* Stars keep twinkling: a gentle fade only, with no movement. */
+  .sparkle {
+    animation-name: sparkle-fade;
   }
 }

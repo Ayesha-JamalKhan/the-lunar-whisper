@@ -1,11 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ArrowDown, ArrowUp, Telescope, Volume2, VolumeX } from 'lucide-react'
+import { ArrowUp, Telescope, Volume2, VolumeX } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ChapterSection } from '@/components/story/chapter-section'
 import {
+  imageUrl,
   Reveal,
   ScrollProgress,
   Starfield,
+  TwinklingStars,
   useActiveSection,
 } from '@/components/story/primitives'
 import { VoiceProvider, useVoice } from '@/components/story/voice'
@@ -21,13 +24,23 @@ const chapterIds = chapters.map((c) => c.id)
 
 function Home() {
   const active = useActiveSection(chapterIds)
+  const onTitle = useOnTitlePage()
 
   return (
     <VoiceProvider>
       <main className="relative bg-background">
-        <ScrollProgress />
-        <ChapterNav active={active} />
-        <VoiceToggle />
+        {/* The title page shows only its cover; the controls appear once the story starts. */}
+        <div
+          className={cn(
+            'relative z-40 transition-opacity duration-500',
+            onTitle && 'pointer-events-none opacity-0',
+          )}
+          inert={onTitle}
+        >
+          <ScrollProgress />
+          <ChapterNav active={active} />
+          <VoiceToggle />
+        </div>
         <Hero />
         {chapters.map((chapter, i) => (
           <ChapterSection key={chapter.id} chapter={chapter} index={i} />
@@ -38,7 +51,7 @@ function Home() {
   )
 }
 
-/** Turns on reading each card aloud, in the characters' voices, as it scrolls into view. */
+/** Turns on reading each card aloud, in the narrator's and characters' voices, as it scrolls into view. */
 function VoiceToggle() {
   const { supported, autoRead, setAutoRead } = useVoice()
   if (!supported) return null
@@ -64,78 +77,59 @@ function VoiceToggle() {
   )
 }
 
-/** A small painted Europa: pale ice with reddish cracks. */
-function EuropaMoon({ className }: { className?: string }) {
+/** The title page: only the cover illustration, stretched to fill the screen. */
+/** The cover picture, with the earlier cover as a fallback if it can't be loaded. */
+const COVER = '/title.jpg'
+const COVER_FALLBACK = '/title.jpeg'
+
+function Hero() {
+  const [cover, setCover] = useState(COVER)
+  const img = useRef<HTMLImageElement>(null)
+  const widths = [640, 960, 1280, 1536]
+  const fallBack = () => setCover((c) => (c === COVER ? COVER_FALLBACK : c))
+
+  // The picture can fail before the page is interactive, when onError isn't listening yet.
+  useEffect(() => {
+    const el = img.current
+    if (el?.complete && el.naturalWidth === 0) fallBack()
+  }, [])
   return (
-    <div
-      aria-hidden="true"
-      className={cn('relative aspect-square rounded-full', className)}
-      style={{
-        background:
-          'radial-gradient(circle at 35% 30%, oklch(0.98 0.02 85), oklch(0.86 0.04 75) 45%, oklch(0.55 0.05 60) 85%, oklch(0.3 0.04 270))',
-        boxShadow:
-          '0 0 80px 10px oklch(0.85 0.08 80 / 0.25), inset -20px -20px 60px oklch(0.2 0.04 270 / 0.7)',
-      }}
-    >
-      <svg
-        viewBox="0 0 100 100"
-        className="absolute inset-0 h-full w-full rounded-full opacity-70 mix-blend-multiply"
-      >
-        <g fill="none" stroke="oklch(0.5 0.12 40)" strokeLinecap="round">
-          <path d="M8 40 C 30 35, 55 50, 92 30" strokeWidth="0.9" />
-          <path d="M15 65 C 40 55, 60 70, 88 58" strokeWidth="0.7" />
-          <path d="M30 10 C 38 35, 45 60, 40 95" strokeWidth="0.6" />
-          <path d="M60 8 C 55 30, 70 55, 62 92" strokeWidth="0.8" />
-          <path d="M5 52 C 25 50, 50 30, 75 15" strokeWidth="0.5" />
-          <path d="M20 85 C 45 78, 70 85, 95 70" strokeWidth="0.5" />
-        </g>
-      </svg>
-    </div>
+    <header id="top" className="relative h-svh overflow-hidden bg-background">
+      <h1 className="sr-only">The Lunar Whisper</h1>
+      <img
+        src={imageUrl(cover, 1280)}
+        srcSet={widths.map((w) => `${imageUrl(cover, w)} ${w}w`).join(', ')}
+        sizes="100vw"
+        alt="The Lunar Whisper. A young woman and her little nephew sit on a stone rooftop above a mountain river at night, looking up at the Moon, Jupiter, icy Europa and the James Webb Space Telescope."
+        width={1024}
+        height={1535}
+        fetchPriority="high"
+        decoding="async"
+        ref={img}
+        onError={fallBack}
+        // Stretched to fill the whole screen, with no empty space around it.
+        className="relative h-full w-full object-fill"
+      />
+      {/* Bright stars twinkling over the night sky of the cover. */}
+      <TwinklingStars className="bottom-auto h-[55%]" />
+    </header>
   )
 }
 
-function Hero() {
-  return (
-    <header id="top" className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 text-center sm:px-6">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.28_0.07_265),transparent_60%),radial-gradient(ellipse_at_bottom,oklch(0.22_0.06_220),transparent_55%)]"
-      />
-      <Starfield />
-
-      <div className="relative">
-        <EuropaMoon className="mx-auto mb-10 w-28 sm:w-36" />
-        <p className="font-display text-sm uppercase tracking-[0.45em] text-primary">
-          What mysteries Europa might hold
-        </p>
-        <h1 className="mt-5 font-display text-6xl font-light leading-[0.95] text-balance sm:text-8xl md:text-9xl">
-          The Lunar <em className="font-normal text-ash">Whisper</em>
-        </h1>
-        <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-          One summer night, on the roof of a sleeping house, a young woman tells her
-          little nephew about a frozen moon of Jupiter, the hidden ocean
-          beneath its ice, and the small hope that something might be living
-          down there in the dark.
-        </p>
-
-        <p className="mx-auto mt-6 max-w-md text-xs text-muted-foreground/70">
-          Press <span className="text-foreground/80">Listen</span> to hear the
-          characters speak their lines.
-        </p>
-
-        <Button asChild size="lg" className="mt-12 rounded-full px-8">
-          <a href={`#${chapters[0].id}`}>
-            Begin the story
-            <ArrowDown className="motion-safe:animate-bounce" aria-hidden="true" />
-          </a>
-        </Button>
-      </div>
-
-      <p className="absolute bottom-6 text-xs text-muted-foreground/80">
-        Scroll slowly. It’s a long way to Jupiter.
-      </p>
-    </header>
-  )
+/** True while the title page is on screen, so the floating controls stay out of it. */
+function useOnTitlePage() {
+  const [onTitle, setOnTitle] = useState(true)
+  useEffect(() => {
+    const el = document.getElementById('top')
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setOnTitle(entry.isIntersecting),
+      { threshold: 0.5 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return onTitle
 }
 
 function ChapterNav({ active }: { active: string | null }) {
@@ -187,7 +181,7 @@ function Epilogue() {
             The End
           </p>
           <p className="mx-auto mt-6 max-w-reading text-lg text-muted-foreground">
-            …or maybe just the beginning. Somewhere out there, past the clouds
+            Somewhere out there, past the clouds
             and the stars that twinkle, a spacecraft is still on its way.
           </p>
         </Reveal>

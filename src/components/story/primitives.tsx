@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
-/** Builds a Netlify Image CDN URL for an illustration in /public/img. */
+/**
+ * Builds a Netlify Image CDN URL for an illustration. `file` is either a path
+ * inside /public (starting with "/") or a bare file name in /public/img.
+ */
 export function imageUrl(file: string, width: number) {
-  return `/.netlify/images?url=/img/${file}&w=${width}&fm=webp&q=80`
+  const path = file.startsWith('/') ? file : `/img/${file}`
+  return `/.netlify/images?url=${encodeURIComponent(path)}&w=${width}&fm=webp&q=80`
 }
 
 export function StoryImage({
@@ -12,11 +16,13 @@ export function StoryImage({
   alt,
   className,
   priority = false,
+  onError,
 }: {
   file: string
   alt: string
   className?: string
   priority?: boolean
+  onError?: () => void
 }) {
   return (
     <img
@@ -29,7 +35,9 @@ export function StoryImage({
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'auto'}
       decoding="async"
-      className={cn('h-full w-full object-cover', className)}
+      onError={onError}
+      // Stretched to fill the whole screen, with no empty space around it.
+      className={cn('h-full w-full object-fill', className)}
     />
   )
 }
@@ -95,8 +103,17 @@ const stars = (() => {
   }))
 })()
 
-/** A layer of softly twinkling stars. */
-export function Starfield({ className }: { className?: string }) {
+/**
+ * A layer of softly twinkling stars. With `glow`, every star gets a soft halo,
+ * so they stand out when laid over the sky of a painted illustration.
+ */
+export function Starfield({
+  className,
+  glow = false,
+}: {
+  className?: string
+  glow?: boolean
+}) {
   return (
     <div
       aria-hidden="true"
@@ -112,7 +129,10 @@ export function Starfield({ className }: { className?: string }) {
               left: `${star.left}%`,
               width: star.size,
               height: star.size,
-              boxShadow: star.size > 2.5 ? '0 0 6px 1px oklch(0.95 0.05 85 / 0.6)' : undefined,
+              boxShadow:
+                glow || star.size > 2.5
+                  ? '0 0 6px 1px oklch(0.95 0.05 85 / 0.6)'
+                  : undefined,
               '--dur': `${star.dur}s`,
               '--delay': `${star.delay}s`,
             } as React.CSSProperties
@@ -175,4 +195,45 @@ export function useActiveSection(ids: string[]) {
   }, [ids])
 
   return active
+}
+
+const sparkles = (() => {
+  const rand = seeded(7)
+  return Array.from({ length: 46 }, () => ({
+    top: 2 + rand() * 92,
+    left: 2 + rand() * 96,
+    size: rand() < 0.7 ? 7 + rand() * 7 : 14 + rand() * 10,
+    dur: 1.6 + rand() * 2.4,
+    delay: rand() * 4,
+  }))
+})()
+
+/**
+ * Bright, four-pointed stars that clearly twinkle (fade and flare) all the
+ * time. Used over the night sky of the title cover.
+ */
+export function TwinklingStars({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn('pointer-events-none absolute inset-0', className)}
+    >
+      {sparkles.map((star, i) => (
+        <span
+          key={i}
+          className="sparkle absolute"
+          style={
+            {
+              top: `${star.top}%`,
+              left: `${star.left}%`,
+              width: star.size,
+              height: star.size,
+              '--dur': `${star.dur}s`,
+              '--delay': `${star.delay}s`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  )
 }
