@@ -7,7 +7,7 @@ import { NotFoundPage } from '@/components/error-pages'
 import '../styles.css'
 
 const siteName = 'The Lunar Whisper — A Story of Europa'
-const siteDescription = 'A young woman and her little nephew on a rooftop, a sky full of stars, and a story about the hidden ocean of Europa — and the small hope that something lives beneath its ice.'
+const siteDescription = 'On a rooftop in the mountains of Pakistan, a little boy and his aunt look up at Jupiter and wonder about Europa, the moon with a hidden ocean beneath its ice, and whether life could be waiting there in the dark.'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -52,7 +52,7 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:image',
-        content: '/.netlify/images?url=/img/rooftop.png&w=1200&fm=jpg',
+        content: '/.netlify/images?url=/title.jpeg&w=1024&fm=jpg',
       },
       {
         name: 'twitter:card',
