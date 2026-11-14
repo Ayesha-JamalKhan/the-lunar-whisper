@@ -1,25 +1,26 @@
-# Under the Cracked Ice
+# The Lunar Whisper
 
-An illustrated, scroll-driven bedtime story about Europa, the icy moon of Jupiter. On a summer night, twelve-year-old Mira and her six-year-old brother Theo sit on their roof watching the stars. Mira tells him about Europa: the cracked ice shell, the vast ocean that may lie beneath it, and the small hope that something could be alive down there in the dark.
+## Project Overview
 
-The story is told in six chapters. Each has a full-screen painted illustration that stays pinned while the narration and dialogue scroll over it. Every chapter ends with a short, accurate science note. The page closes with tips for finding Jupiter and its moons in the real night sky.
+In this heartwarming and imaginative story, a curious kid and his aunt begin their cosmic journey of discovery from their own rooftop. Together, they explore the wonders of Europa, Jupiter’s mysterious icy moon, imagining what life forms might swim within the vast, hidden ocean beneath its frozen crust.
+As they discuss about the Europa's hidden ocean, the conversation shifts from distant stars back to their own home. Ultimately, the aunt uses the magic of space exploration to teach her nephew a vital, grounded lesson. 
+Powered by verified data from NASA and other trusted institutions, this project illustrates a creative way to teach complex space science to everyone.  
+
+## Team Phantom Rovers
+
+We are an aunt-and-nephew creative duo. By pairing a young explorer’s boundless imagination and passion for space with his aunt’s research expertise and guidance, we brought this interactive story to life.
+
 
 ## Technologies
 
 - [TanStack Start](https://tanstack.com/start) with React 19 and TypeScript
 - Tailwind CSS 4, with the Fraunces and Literata fonts
-- Netlify Image CDN to serve responsive WebP versions of the illustrations
-- Illustrations generated once with a Gemini image model through Netlify AI Gateway and saved in `public/img`
+- Illustrations generated once with a Gemini image model through Netlify AI Gateway
 
-## Running locally
+## Data Sources
 
-```bash
-npm install
-netlify dev   # or: npm run dev
-```
+https://science.nasa.gov/
+https://science.nasa.gov/missions/webb/nasas-webb-finds-carbon-source-on-surface-of-jupiters-moon-europa/
+https://swot.jpl.nasa.gov/
+https://gpm.nasa.gov/
 
-Image CDN URLs (`/.netlify/images?...`) need `netlify dev` to work locally.
-
-## Editing the story
-
-All text lives in `src/content/story.ts`: the chapters, the lines spoken by each character, the science notes, and the stargazing tips. Change the words there without touching any layout code.
