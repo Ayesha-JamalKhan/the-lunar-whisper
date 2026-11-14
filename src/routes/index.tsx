@@ -77,10 +77,10 @@ function VoiceToggle() {
   )
 }
 
-/** The title page: only the cover illustration, stretched to fill the screen. */
-/** The cover picture, with the earlier cover as a fallback if it can't be loaded. */
-const COVER = '/title.jpg'
-const COVER_FALLBACK = '/title.jpeg'
+/** The title page: the cover illustration, stretched to fill the screen. */
+const COVER = '/title.png'
+/** Used until `/title.png` is added to `public/`. */
+const COVER_FALLBACK = '/title.jpg'
 
 function Hero() {
   const [cover, setCover] = useState(COVER)
@@ -93,25 +93,42 @@ function Hero() {
     const el = img.current
     if (el?.complete && el.naturalWidth === 0) fallBack()
   }, [])
+
+  const begin = () => {
+    const first = document.getElementById(chapters[0].id)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    first?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })
+  }
+
   return (
     <header id="top" className="relative h-svh overflow-hidden bg-background">
       <h1 className="sr-only">The Lunar Whisper</h1>
       <img
+        ref={img}
         src={imageUrl(cover, 1280)}
         srcSet={widths.map((w) => `${imageUrl(cover, w)} ${w}w`).join(', ')}
         sizes="100vw"
         alt="The Lunar Whisper. A young woman and her little nephew sit on a stone rooftop above a mountain river at night, looking up at the Moon, Jupiter, icy Europa and the James Webb Space Telescope."
-        width={1024}
-        height={1535}
+        width={896}
+        height={1200}
         fetchPriority="high"
         decoding="async"
-        ref={img}
         onError={fallBack}
         // Stretched to fill the whole screen, with no empty space around it.
         className="relative h-full w-full object-fill"
       />
       {/* Bright stars twinkling over the night sky of the cover. */}
       <TwinklingStars className="bottom-auto h-[55%]" />
+      <div className="absolute inset-x-0 bottom-[max(2.5rem,env(safe-area-inset-bottom))] flex justify-center">
+        <Button
+          type="button"
+          size="lg"
+          onClick={begin}
+          className="h-auto rounded-full border border-amber-200/60 bg-amber-300/90 px-8 py-3 font-display text-lg text-indigo-950 shadow-[0_0_30px_rgba(252,211,77,0.45)] hover:bg-amber-200 focus-visible:ring-amber-100"
+        >
+          Story Begins
+        </Button>
+      </div>
     </header>
   )
 }

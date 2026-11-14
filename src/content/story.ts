@@ -130,7 +130,8 @@ export const narrator: Character = {
 }
 
 const n = (text: string, mood?: Mood | Mood[]): Line => ({ kind: 'narration', text, mood })
-const verse = (text: string, mood?: Mood | Mood[]): Line => ({
+/** A poem: narration read line by line (lines separated by `\n`). */
+export const verse = (text: string, mood?: Mood | Mood[]): Line => ({
   kind: 'narration',
   text,
   mood,
@@ -231,14 +232,6 @@ export const chapters: Chapter[] = [
             "Exactly! And this is why Europa's story is so close to us. If life can live in the dark under ice, then life is stronger than we thought, and water is more precious than we imagine.",
             ['excited', 'gentle', 'serious'],
             'Ash said:',
-          ),
-        ],
-      },
-      {
-        lines: [
-          verse(
-            'No sun, no sky, no day, no night\nYet life can grow without the light\nIn warm dark water, deep below\nIs where Europa’s secrets glow',
-            ['serious', 'gentle', 'wonder', 'whisper'],
           ),
         ],
       },
@@ -415,8 +408,8 @@ export const chapters: Chapter[] = [
       },
       {
         image: {
-          file: '/chapter3/image_cad65303.jpg',
-          alt: 'A village prepared for the monsoon, safe from the river.',
+          file: '/chapter3/raining.jpg',
+          alt: 'Monsoon rain falling over the mountain town and its river.',
         },
         lines: [
           ash(
@@ -426,11 +419,7 @@ export const chapters: Chapter[] = [
         ],
       },
       {
-        image: {
-          file: '/chapter3/raining.jpg',
-          alt: 'Monsoon rain falling over the mountain town and its river.',
-        },
-        // No link on the flood-prevention tips.
+        // The rain picture from the card above stays. No link on the flood-prevention tips.
         link: null,
         lines: [
           list(
