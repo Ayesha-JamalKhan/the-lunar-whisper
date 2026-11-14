@@ -17,13 +17,8 @@ We are an aunt-and-nephew creative duo. By pairing a young explorer’s boundles
 - Tailwind CSS 4, with the Fraunces and Literata fonts
 - Illustrations generated once with a Gemini image model through Netlify AI Gateway
 
-## Data Sources
 
-- https://science.nasa.gov/
-- https://swot.jpl.nasa.gov/
-- https://gpm.nasa.gov/
-- https://svs.gsfc.nasa.gov/13693/
-- ### Data Sources
+## Data Sources
 * [NASA Science](https://science.nasa.gov/)
 * [NASA Europa Clipper](https://science.nasa.gov/mission/europa-clipper/)
 * [James Webb Space Telescope](https://science.nasa.gov/mission/webb/)
