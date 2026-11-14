@@ -121,13 +121,13 @@ function Hero() {
         rel="noopener noreferrer"
         aria-label="The Lunar Whisper on GitHub (opens in a new tab)"
         title="View on GitHub"
-        className="absolute right-3 top-3 z-10 block size-11 rounded-full bg-white p-1.5 shadow-lg shadow-black/50 transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 sm:right-5 sm:top-5 sm:size-12"
+        className="absolute right-3 top-3 z-10 block size-12 rounded-full bg-white p-1.5 shadow-lg shadow-black/50 transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 sm:right-5 sm:top-5 sm:size-14"
       >
         <img
-          src={imageUrl('/github-logo.png', 96)}
+          src={imageUrl('/github-logo.png', 112)}
           alt=""
-          width={48}
-          height={48}
+          width={56}
+          height={56}
           decoding="async"
           className="h-full w-full object-contain"
         />
