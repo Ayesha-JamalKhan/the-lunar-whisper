@@ -106,6 +106,23 @@ function Hero() {
       />
       {/* Bright stars twinkling over the night sky of the cover. */}
       <TwinklingStars className="bottom-auto h-[55%]" />
+      <a
+        href="https://github.com/Ayesha-JamalKhan/the-lunar-whisper"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="The Lunar Whisper on GitHub (opens in a new tab)"
+        title="View on GitHub"
+        className="absolute right-3 top-3 z-10 block size-11 rounded-full bg-white p-1.5 shadow-lg shadow-black/50 transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 sm:right-5 sm:top-5 sm:size-12"
+      >
+        <img
+          src={imageUrl('/github-logo.png', 96)}
+          alt=""
+          width={48}
+          height={48}
+          decoding="async"
+          className="h-full w-full object-contain"
+        />
+      </a>
       <div className="absolute inset-x-0 bottom-[max(2.5rem,env(safe-area-inset-bottom))] flex justify-center">
         <Button
           type="button"
