@@ -11,6 +11,7 @@ import {
   TwinklingStars,
   useActiveSection,
 } from '@/components/story/primitives'
+import { MusicProvider, MusicToggle, useMusic } from '@/components/story/music'
 import { VoiceProvider, useVoice } from '@/components/story/voice'
 import { Button } from '@/components/ui/button'
 import { chapters, lookUpTips } from '@/content/story'
@@ -28,25 +29,31 @@ function Home() {
 
   return (
     <VoiceProvider>
-      <main className="relative bg-background">
-        {/* The title page shows only its cover; the controls appear once the story starts. */}
-        <div
-          className={cn(
-            'relative z-40 transition-opacity duration-500',
-            onTitle && 'pointer-events-none opacity-0',
-          )}
-          inert={onTitle}
-        >
-          <ScrollProgress />
-          <ChapterNav active={active} />
-          <VoiceToggle />
-        </div>
-        <Hero />
-        {chapters.map((chapter, i) => (
-          <ChapterSection key={chapter.id} chapter={chapter} index={i} />
-        ))}
-        <Epilogue />
-      </main>
+      <MusicProvider>
+        <main className="relative bg-background">
+          {/* The title page shows only its cover; the controls appear once the story starts. */}
+          <div
+            className={cn(
+              'relative z-40 transition-opacity duration-500',
+              onTitle && 'pointer-events-none opacity-0',
+            )}
+            inert={onTitle}
+          >
+            <ScrollProgress />
+            <ChapterNav active={active} />
+            {/* Voice toggle on top, music toggle below it, in the bottom-left corner. */}
+            <div className="fixed bottom-4 left-4 z-40 flex flex-col items-start gap-2">
+              <VoiceToggle />
+              <MusicToggle />
+            </div>
+          </div>
+          <Hero />
+          {chapters.map((chapter, i) => (
+            <ChapterSection key={chapter.id} chapter={chapter} index={i} />
+          ))}
+          <Epilogue />
+        </main>
+      </MusicProvider>
     </VoiceProvider>
   )
 }
@@ -61,7 +68,7 @@ function VoiceToggle() {
       onClick={() => setAutoRead(!autoRead)}
       aria-pressed={autoRead}
       className={cn(
-        'fixed bottom-4 left-4 z-40 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm shadow-lg shadow-black/40 backdrop-blur-md transition-colors focus-visible:outline-2',
+        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm shadow-lg shadow-black/40 backdrop-blur-md transition-colors focus-visible:outline-2',
         autoRead
           ? 'border-primary/60 bg-primary/15 text-foreground'
           : 'border-border bg-background/70 text-muted-foreground hover:text-foreground',
@@ -82,8 +89,10 @@ const COVER = '/title.png'
 
 function Hero() {
   const widths = [640, 960, 1280, 1672]
+  const music = useMusic()
 
   const begin = () => {
+    music.start()
     const first = document.getElementById(chapters[0].id)
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     first?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' })
@@ -123,7 +132,11 @@ function Hero() {
           className="h-full w-full object-contain"
         />
       </a>
-      <div className="absolute inset-x-0 bottom-[max(2.5rem,env(safe-area-inset-bottom))] flex justify-center">
+      <div className="absolute inset-x-0 bottom-[max(2.5rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-3 px-4">
+        <p className="max-w-md rounded-full bg-black/35 px-4 py-1.5 text-center text-xs leading-snug text-amber-50/90 backdrop-blur-sm [text-shadow:0_1px_4px_rgba(0,0,0,0.8)] sm:max-w-none sm:text-sm">
+          A digital storytelling experience inspired by the NASA Space Apps
+          Challenge 2026 — “Abandoned but not Forgotten”
+        </p>
         <Button
           type="button"
           size="lg"
@@ -180,7 +193,8 @@ function ChapterNav({ active }: { active: string | null }) {
                 <span
                   className={cn(
                     'block size-2 rounded-full bg-foreground/30 transition-all',
-                    isActive && 'size-3 bg-primary shadow-[0_0_12px] shadow-primary',
+                    isActive &&
+                      'size-3 bg-primary shadow-[0_0_12px] shadow-primary',
                   )}
                 />
               </a>
@@ -202,8 +216,8 @@ function Epilogue() {
             The End
           </p>
           <p className="mx-auto mt-6 max-w-reading text-lg text-muted-foreground">
-            Somewhere out there, past the clouds
-            and the stars that twinkle, a spacecraft is still on its way.
+            Somewhere out there, past the clouds and the stars that twinkle, a
+            spacecraft is still on its way.
           </p>
         </Reveal>
 
